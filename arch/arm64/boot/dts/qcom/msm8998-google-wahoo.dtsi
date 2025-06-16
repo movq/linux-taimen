@@ -115,14 +115,6 @@
 	};
 };
 
-&apc_cprh {
-	status = "okay";
-};
-
-&cpufreq_hw {
-	status = "okay";
-};
-
 &pm8005_lsid1 {
 	pm8005-regulators {
 		compatible = "qcom,pm8005-regulators";
@@ -363,47 +355,9 @@
 	status = "okay";
 };
 
-&dsi0 {
-	#address-cells = <1>;
-	#size-cells = <0>;
-	status = "okay";
-
-	vdd-supply = <&vreg_l1a_0p875>;
-	vdda-supply = <&vreg_l2a_1p2>;
-
-	panel: panel@0 {
-		reg = <0>;
-
-		reset-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
-		disp-te-gpios = <&tlmm 10 GPIO_ACTIVE_LOW>;
-
-		vddio-supply = <&panel_ldo_vddio_supply>;
-		vpnl-supply = <&panel_ldo_vpnl_supply>;
-
-		pinctrl-names = "default";
-		pinctrl-0 = <&panel_reset_n &disp_en_default &mdp_vsync_n>;
-
-		port {
-			panel_in: endpoint {
-				remote-endpoint = <&dsi0_out>;
-			};
-		};
-	};
-};
-
-&dsi0_phy {
-	status = "okay";
-	vdds-supply = <&vreg_l1a_0p875>;
-};
-
-&dsi0_out {
-	remote-endpoint = <&panel_in>;
-	data-lanes = <0 1 2 3>;
-};
-
 /* Adreno 540 GPU */
 &gpucc {
-	status = "okay";
+	status = "disabled";
 };
 
 &gpu_mem {
@@ -411,7 +365,7 @@
 };
 
 &adreno_gpu {
-	status = "okay";
+	status = "disabled";
 
 	zap-shader {
 		memory-region = <&zap_shader_region>; // gpu_mem?
@@ -483,7 +437,7 @@
  * enabled.
  */
 &usb3 {
-	status = "okay";
+	status = "disabled";
 
 	/* Operate "GCC_USB30_MASTER_CLK" in HS mode (>=60 MHz) */
 	assigned-clock-rates = <19200000>, <60000000>;

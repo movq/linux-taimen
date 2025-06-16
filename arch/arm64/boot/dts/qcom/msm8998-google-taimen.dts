@@ -13,6 +13,3 @@
 	qcom,msm-id = <0x124 0x20001>;
 };
 
-&panel {
-	compatible = "lg,sw43402";
-};
