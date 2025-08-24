@@ -73,7 +73,7 @@
 		regulator-boot-on;
 	};
 
-	panel_ldo_vddio_supply: panel-ldo {
+	panel_ldo_vddio_supply: panel-ldo-vddio {
 		compatible = "regulator-fixed";
 		regulator-name = "panel_ldo_vddio_supply";
 
@@ -85,12 +85,12 @@
 		regulator-boot-on;
 	};
 
-	panel_ldo_vpnl_supply: panel-ldo {
+	panel_ldo_vpnl_supply: panel-ldo-vpnl {
 		compatible = "regulator-fixed";
 		regulator-name = "panel_ldo_vpnl_supply";
 
-		regulator-min-microvolt = <1800000>;
-		regulator-max-microvolt = <1800000>;
+		regulator-min-microvolt = <3000000>;
+		regulator-max-microvolt = <3000000>;
 
 		gpio = <&tlmm 21 0>;
 		enable-active-high;
@@ -136,7 +136,7 @@
 };
 
 &qusb2phy {
-	status = "disabled";
+	status = "okay";
 
 	vdda-pll-supply = <&vreg_l12a_1p8>;
 	vdda-phy-dpdm-supply = <&vreg_l24a_3p075>;
@@ -161,7 +161,7 @@
 };
 
 &rpm_requests {
-	status = "disabled";
+	status = "okay";
 	pm8998-regulators {
 		compatible = "qcom,rpm-pm8998-regulators";
 
@@ -344,24 +344,32 @@
 };
 
 &mmcc {
-	status = "disabled";
+	status = "okay";
 };
 
 &mmss_smmu {
-	status = "disabled";
+	status = "okay";
 };
 
 &mdss {
-	status = "disabled";
+	status = "okay";
 };
 
 &mdss_mdp {
-	status = "disabled";
+	status = "okay";
+};
+
+&mdss_dsi0 {
+	status = "okay";
+};
+
+&mdss_dsi0_phy {
+	status = "okay";
 };
 
 /* Adreno 540 GPU */
 &gpucc {
-	status = "disabled";
+	status = "okay";
 };
 
 &gpu_mem {
@@ -369,7 +377,7 @@
 };
 
 &adreno_gpu {
-	status = "disabled";
+	status = "okay";
 
 	zap-shader {
 		memory-region = <&zap_shader_region>; // gpu_mem?
@@ -391,7 +399,7 @@
 };
 
 &adreno_smmu {
-	status = "disabled";
+	status = "okay";
 };
 
 /*
@@ -403,6 +411,7 @@
 	//regulator-max-microvolt = <1100000>;
 };
 
+/*
 &tlmm {
 	gpio-reserved-ranges = <0 4>, <81 4>;
 
@@ -434,6 +443,7 @@
 		bias-pull-down;
 	};
 };
+*/
 
 /*
  * The device does contain a USB3 capable type-c port,
@@ -441,7 +451,7 @@
  * enabled.
  */
 &usb3 {
-	status = "disabled";
+	status = "okay";
 
 	/* Operate "GCC_USB30_MASTER_CLK" in HS mode (>=60 MHz) */
 	assigned-clock-rates = <19200000>, <60000000>;
@@ -492,4 +502,24 @@
 	vdd-1.8-xo-supply = <&vreg_l7a_1p8>;
 	vdd-1.3-rfa-supply = <&vreg_l17a_1p3>;
 	vdd-3.3-ch0-supply = <&vreg_l25a_3p3>;
+};
+
+&mdss_dsi0 {
+	status = "okay";
+
+	panel: panel@0 {
+		compatible = "lg,sw43402";
+		reg = <0>;
+
+		vddi-supply = <&panel_ldo_vddio_supply>;
+		vpnl-supply = <&panel_ldo_vpnl_supply>;
+
+		reset-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
+
+		port {
+			panel_in: endpoint {
+				remote-endpoint = <&mdss_dsi0_out>;
+			};
+		};
+	};
 };

@@ -2245,7 +2245,7 @@
 
 			resets = <&gcc GCC_QUSB2PHY_PRIM_BCR>;
 
-			nvmem-cells = <&qusb2_hstx_trim>;
+			/* nvmem-cells = <&qusb2_hstx_trim>; */
 		};
 
 		sdhc2: mmc@c0a4900 {
