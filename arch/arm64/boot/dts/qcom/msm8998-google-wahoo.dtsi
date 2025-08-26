@@ -74,8 +74,24 @@
 	};
 };
 
+&adreno_smmu {
+	/delete-property/ power-domains;
+};
+
 /* Debug serial port over USB-C pins */
 &blsp2_uart1 {
+	status = "okay";
+};
+
+&mdss {
+	status = "okay";
+};
+
+&mdss_dsi0 {
+	status = "okay";
+};
+
+&mdss_dsi0_phy {
 	status = "okay";
 };
 

@@ -67,8 +67,7 @@ static int sw43402_program(struct drm_panel *panel)
 	mipi_dsi_dcs_write_seq_multi(&ctx, 0xb0, 0x20, 0x43);
 	mipi_dsi_dcs_write_seq_multi(&ctx, 0xb0, 0xa5, 0x00);
 	mipi_dsi_dcs_write_seq_multi(&ctx, 0xb2, 0x5d, 0x01, 0x02, 0x80, 0x00, 0xff, 0xff, 0x15, 0x00, 0x00, 0x00, 0x00);
-	mipi_dsi_dcs_write_seq_multi(&ctx, 0xb2, 0x5d, 0x01, 0x02, 0x80, 0x00, 0xff, 0xff, 0x15, 0x00, 0x00, 0x00, 0x00);
-	mipi_dsi_dcs_set_tear_on_multi(&ctx, MIPI_DSI_DCS_TEAR_MODE_VBLANK); /* XXX: takes no parameter in downstream */
+	mipi_dsi_dcs_write_seq_multi(&ctx, 0x35);
 	mipi_dsi_dcs_exit_sleep_mode_multi(&ctx);
 	mipi_dsi_msleep(&ctx, 60);
 
@@ -91,26 +90,27 @@ static int sw43402_program(struct drm_panel *panel)
 			       0x4a, 0x00);
 	mipi_dsi_msleep(&ctx, 20);
 
-
+	/*
 	mipi_dsi_dcs_set_display_on_multi(&ctx);
-
 	mipi_dsi_msleep(&ctx, 50);
 
 	sw43402->link->mode_flags &= ~MIPI_DSI_MODE_LPM;
+	*/
 
+	pps.pps_identifier = 0;
+	pps.pps_reserved = 0;
 	drm_dsc_pps_payload_pack(&pps, sw43402->link->dsc);
 
 	mipi_dsi_picture_parameter_set_multi(&ctx, &pps);
 
+	/*
 	sw43402->link->mode_flags |= MIPI_DSI_MODE_LPM;
+	*/
 
 	/*
-	 * This panel uses PPS selectors with offset:
-	 * PPS 1 if pps_identifier is 0
-	 * PPS 2 if pps_identifier is 1
-	 */
 	mipi_dsi_compression_mode_ext_multi(&ctx, true,
-					    MIPI_DSI_COMPRESSION_DSC, 1);
+					    MIPI_DSI_COMPRESSION_DSC, 0);
+	*/
 	return ctx.accum_err;
 }
 
@@ -123,16 +123,20 @@ static int sw43402_prepare(struct drm_panel *panel)
 	if (ret < 0)
 		return ret;
 
+	/*
 	usleep_range(5000, 6000);
 
 	gpiod_set_value(ctx->reset_gpio, 0);
-	usleep_range(9000, 10000);
+	usleep_range(10000, 11000);
+
 	gpiod_set_value(ctx->reset_gpio, 1);
-	usleep_range(1000, 2000);
+	usleep_range(10000, 11000);
+
 	gpiod_set_value(ctx->reset_gpio, 0);
-	usleep_range(9000, 10000);
+	usleep_range(10000, 11000);
 
 	ret = sw43402_program(panel);
+	*/
 	if (ret)
 		goto poweroff;
 
@@ -145,7 +149,7 @@ poweroff:
 }
 
 static const struct drm_display_mode sw43402_mode = {
-	.clock = (1080 + 20 + 32 + 20) * (2160 + 20 + 4 + 20) * 60 / 1000,
+	.clock = (1440 + 20 + 32 + 20) * (2880 + 20 + 4 + 20) * 60 / 1000,
 
 	.hdisplay = 1440,
 	.hsync_start = 1440 + 20,
@@ -259,6 +263,8 @@ static int sw43402_probe(struct mipi_dsi_device *dsi)
 	dsi->mode_flags = MIPI_DSI_MODE_LPM;
 	dsi->format = MIPI_DSI_FMT_RGB888;
 	dsi->lanes = 4;
+	dsi->mode_flags = MIPI_DSI_MODE_VIDEO_BURST |
+			  MIPI_DSI_CLOCK_NON_CONTINUOUS | MIPI_DSI_MODE_LPM;
 
 	ctx->link = dsi;
 	mipi_dsi_set_drvdata(dsi, ctx);
